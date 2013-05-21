@@ -18,5 +18,5 @@ y <- a + b * x +
 plot(x, y)
 abline(a, b, col = "blue", lwd = 2)
 
-write(avgX, "avgX.txt")
-dev.print(pdf, "niftyPlot.pdf")
+write(avgX, "results/avgX.txt")
+dev.print(pdf, "figs/niftyPlot.pdf")

@@ -1,6 +1,6 @@
 ## this is an ugly script -- not meant to be "source'd" -- where I am merely
 ## collecting code we ran to learn about data aggregation
-gDat <- read.delim("gapminderDataFiveYear.txt")
+gDat <- read.delim("data/gapminderDataFiveYear.txt")
 str(gDat)
 
 ## don't create copies of little bits of your data.frame like this unless you

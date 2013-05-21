@@ -1,5 +1,5 @@
 ## this is an ugly script -- not meant to be "source'd"
-gDat <- read.delim("gapminderDataFiveYear.txt")
+gDat <- read.delim("data/gapminderDataFiveYear.txt")
 str(gDat)
 
 ## function that returns estimated intercept and slope from linear regression of
@@ -46,13 +46,13 @@ levels(gCoef$continent)
 ## plain text is always good!
 ## we slowly built up the arguments below
 ## you may not want all of these?
-write.table(gCoef, "gCoef.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+write.table(gCoef, "results/gCoef.txt", quote = FALSE, row.names = FALSE, sep = "\t")
 
 ## bad news about plain text storage:
 ## upon re-import via read.table, factors levels revert to alphabetical order
 levels(gCoef$continent) # rational level order
 rm(gCoef)
-gCoef <- read.delim("gCoef.txt")
+gCoef <- read.delim("results/gCoef.txt")
 levels(gCoef$continent) # back to alphabetical!!
 
 ## let's re-reorder the continent factor levels
@@ -62,18 +62,18 @@ levels(gCoef$continent)
 
 ## how to store a data.frame in a plain text file WITH factor level order being
 ## preserved?
-dput(gCoef, "gCoef_DPUT.txt")
+dput(gCoef, "results/gCoef_DPUT.txt")
 rm(gCoef)
-gCoef <- dget("gCoef_DPUT.txt")
+gCoef <- dget("results/gCoef_DPUT.txt")
 levels(gCoef$continent)
 ## success!
 ## but the file written by dput() is not easy to browse or open
 ## in Excel or anywhere outside of R, for that matter
 
 ## if we abandon plain text, there is an R-specific binary format
-saveRDS(gCoef, "gCoef.rds")
+saveRDS(gCoef, "results/gCoef.rds")
 rm(gCoef)
-gCoef <- readRDS("gCoef.rds")
+gCoef <- readRDS("results/gCoef.rds")
 levels(gCoef$continent)
 ## success!
 

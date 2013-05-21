@@ -4,11 +4,18 @@
 ## to install: install.packages("knitr")
 
 library(lattice)
-## this path is affected by using the Compile Notebook button, which runs where a script lives
-## as opposed to the true home directory for this project
-## you may need to (un)comment to get desired result
-## str(gCoef <- readRDS("../results/gCoef.rds"))
-str(gCoef <- readRDS("gCoef.rds"))
+
+## the working directory will differ for live execution vs. using Compile Notebook
+## you will need to toggle the comment status of these lines to get
+## what you want
+
+## for Compile Notebook:
+str(gCoef <- readRDS("../results/gCoef.rds"))
+
+## for live execution when working directory set correctly to top-level
+## directory for this project
+## str(gCoef <- readRDS("results/gCoef.rds"))
+
 hDat <-
   droplevels(subset(gCoef,
                     continent %in% c("Asia", "Americas")))

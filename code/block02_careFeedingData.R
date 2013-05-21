@@ -13,11 +13,11 @@ str(gDat) # your main function for inspecting an object
 ## reading data from the web is a bit of a novelty
 ## more important: read from a locally stored plain text file
 
-gDat <- read.delim("gapminderDataFiveYear.txt")
+gDat <- read.delim("data/gapminderDataFiveYear.txt")
 ## read.table is the main workhorse for data import
 ## read.delim is merely a wrapper around that with
 ## certain arguments set to specific values
-gDat <- read.delim("gapminderDataFiveYear.txt",
+gDat <- read.delim("data/gapminderDataFiveYear.txt",
                    header = TRUE, sep = "\t")
 str(gDat)
 head(gDat, n = 10)
