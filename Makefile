@@ -11,3 +11,6 @@ prose/02_slopeComparisonAsiaVsAmericas.html: results/gCoef.rds code/02_slopeComp
 
 figs/slopes_AsiaVsAmericas.pdf results/slopes_AsiaVsAmericas.txt: results/gCoef.rds code/03_slopeComparisonAsiaVsAmericas.R
 	Rscript code/03_slopeComparisonAsiaVsAmericas.R
+
+clean:
+	rm -f results/* figs/*
