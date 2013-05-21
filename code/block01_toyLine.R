@@ -16,8 +16,12 @@ y <- a + b * x +
   rnorm(n, sd = sqrt(sigSq))
 (avgX <- mean(x))
 
+write(avgX, "results/avgX.txt")
+
+pdf("figs/niftyPlot.pdf")
 plot(x, y)
 abline(a, b, col = "blue", lwd = 2)
+dev.off()
 
-write(avgX, "results/avgX.txt")
-dev.print(pdf, "figs/niftyPlot.pdf")
+
+
