@@ -26,11 +26,16 @@ hDat <-
                     continent %in% c("Asia", "Americas")))
 str(hDat)
 
-## JENNY TO DO:
-## This figure is not appearing in the .html file when we knitr::stitch() from
-## the command line or from a Makefile
-## Figure that out and fix it!
 ## Figure appears fine via RStudio's Compile Notebook feature
 dotplot(slope ~ continent, hDat)
+## JENNY TO DO:
+## This figure is NOT appearing in the .html file when we knitr::stitch() from
+## the command line via "Rscript -e" or from a Makefile
+## Figure that out and fix it!
+## Suspect is related to figure/02-slopeComparisonAsiaVsAmericas-Rhtmlauto-report.png
+## which IS being created. Suspect I need to tell knitr::stitch() to make a self-contained html file or
+## make sure this png goes to the right place.
+## this may eventually be helpful:
+## opts_chunk$set(fig.path="prose/figs/")
 
 t.test(slope ~ continent, hDat)
