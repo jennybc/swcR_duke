@@ -1,0 +1,22 @@
+## our first stand-alone script
+## can be source'd
+## or could be run from command line via R CMD BATCH
+## in Rstudio, we experimented with the various buttons
+## and keyboard shortcuts RStudio's provides for sending
+## code to the R console
+
+a <- 2
+b <- 7
+sigSq <- 0.5
+n <- 400
+
+x <- runif(n)
+y <- a + b * x +
+  rnorm(n, sd = sqrt(sigSq))
+(avgX <- mean(x))
+
+plot(x, y)
+abline(a, b, col = "blue", lwd = 2)
+
+write(avgX, "avgX.txt")
+dev.print(pdf, "niftyPlot.pdf")
