@@ -1,3 +1,4 @@
+## This was written by Jenny!
 ## our first stand-alone script
 ## can be source'd
 ## or could be run from command line via R CMD BATCH
