@@ -15,3 +15,5 @@ Jenny and Ben continued to make changes to the repo, e.g. adding README.md and L
 After Ben had covered `make`, we set about making final preparations to some of our R scripts so they could be used in an automated pipeline managed by `make`. There are several commits related to these preparations. There is one remaining "gremlin" in which one of our automated reports is not successfully including a figure. Fixing this is on Jenny's to do list, it's probably merely a path issue relating to where the figures are being stored and sought.
 
 Overall, we were quite pleased with how this all worked together. Day 1 stood well by itself and then that material gave us a great opportunity to apply everything we were learning on Day 2: file and directory manipulation from the command line, version control and collaboration, and automating a workflow with `make`.
+
+PS: Jenny showed a couple slides from her UBC courses with helpful visuals for various R concepts. Students requested those and they are in `prose/slides.pdf`.
