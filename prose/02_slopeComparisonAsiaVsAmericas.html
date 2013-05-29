@@ -112,23 +112,29 @@
 <div class="chunk" id="auto-report"><div class="rcode"><div class="source"><pre class="knitr r"><span class="comment">## use File --&gt; Compile Notebook on me or click notebook button <span class="keyword">in</span> top right of editor</span>
 <span class="comment">## pane</span>
 
-<span class="comment">## or get same result from the command line: Rscript -e</span>
-## <span class="string">'knitr::<span class="functioncall">stitch_rhtml</span>('</span>code/02_slopeComparisonAsiaVsAmericas.R', output =
-## <span class="string">'prose/02_slopeComparisonAsiaVsAmericas.html'</span>)'
+<span class="comment">## or get same result from the command line:</span>
+
+<span class="comment">## assuming that this file lives <span class="keyword">in</span> code/ and you want the result <span class="keyword">in</span> prose/ and that</span>
+<span class="comment">## working directory is prose/</span>
+
+## Rscript -e <span class="string">'knitr::<span class="functioncall">stitch_rhtml</span>('</span>../code/02_slopeComparisonAsiaVsAmericas.R', output =
+## <span class="string">'02_slopeComparisonAsiaVsAmericas.html'</span>)'
 
 ## either will require knitr package to work to install: <span class="functioncall">install.packages</span>(<span class="string">'knitr'</span>)
 
 <span class="functioncall">library</span>(lattice)
 
-<span class="comment">## the working directory will differ <span class="keyword">for</span> live execution vs. command line execution vs.</span>
-<span class="comment">## using Compile Notebook you will need to toggle the comment status of these lines to</span>
-<span class="comment">## get what you want</span>
+<span class="comment">## ALERT: the working directory may differ <span class="keyword">for</span> live execution vs. command line execution</span>
+<span class="comment">## vs.  using RStudio's Compile Notebook.</span>
 
-## <span class="keyword">for</span> Compile Notebook: <span class="functioncall">str</span>(gCoef &lt;- <span class="functioncall">readRDS</span>(<span class="string">'../results/gCoef.rds'</span>))
-
-<span class="comment">## <span class="keyword">for</span> live execution or command line execution, when working directory set correctly to</span>
-<span class="comment">## top-level directory <span class="keyword">for</span> this project</span>
-<span class="functioncall">str</span>(gCoef &lt;- <span class="functioncall">readRDS</span>(<span class="string">"results/gCoef.rds"</span>))
+<span class="comment">## If things aren't working, scrutinize the working directory.  Is it what you think it</span>
+<span class="comment">## is?</span>
+<span class="functioncall">getwd</span>()
+</pre></div><div class="output"><pre class="knitr r">## [1] "/Users/jenny/teaching/jbR/rmd/swcR_duke/prose"
+</pre></div><div class="source"><pre class="knitr r">
+<span class="comment">## you may need to toggle the comment status of these lines to get what you want</span>
+## <span class="functioncall">str</span>(gCoef &lt;- <span class="functioncall">readRDS</span>(<span class="string">'results/gCoef.rds'</span>))
+<span class="functioncall">str</span>(gCoef &lt;- <span class="functioncall">readRDS</span>(<span class="string">"../results/gCoef.rds"</span>))
 </pre></div><div class="output"><pre class="knitr r">## 'data.frame':	140 obs. of  4 variables:
 ##  $ country  : Factor w/ 140 levels "Afghanistan",..: 1 2 3 4 5 6 7 8 9 10 ...
 ##  $ continent: Factor w/ 4 levels "Europe","Africa",..: 4 1 2 2 3 1 4 4 1 2 ...
@@ -188,7 +194,7 @@ hDat &lt;- <span class="functioncall">droplevels</span>(<span class="functioncal
 ## [1] brew_1.0-6     evaluate_0.4.3 formatR_0.7    grid_2.15.2    knitr_1.1     
 ## [6] stringr_0.6.2  tools_2.15.2
 </pre></div><div class="source"><pre class="knitr r"><span class="functioncall">Sys.time</span>()
-</pre></div><div class="output"><pre class="knitr r">## [1] "2013-05-21 12:15:12 PDT"
+</pre></div><div class="output"><pre class="knitr r">## [1] "2013-05-29 12:10:46 PDT"
 </pre></div></div></div>
 
 
