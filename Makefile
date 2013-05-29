@@ -1,4 +1,4 @@
-  all: results/avgX.txt figs/slopes_AsiaVsAmericas.pdf prose/02_slopeComparisonAsiaVsAmericas.html
+all: results/avgX.txt figs/slopes_AsiaVsAmericas.pdf prose/02_slopeComparisonAsiaVsAmericas.html
 
 results/avgX.txt figs/niftyPlot.pdf: data/gapminderDataFiveYear.txt code/block01_toyLine.R
 	Rscript code/block01_toyLine.R
