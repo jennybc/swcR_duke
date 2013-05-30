@@ -7,8 +7,10 @@ results/gCoef.txt results/gCoef.rds: data/gapminderDataFiveYear.txt code/01_coun
 	Rscript code/01_countrySpecificInterceptSlope.R
 
 prose/02_slopeComparisonAsiaVsAmericas.html: results/gCoef.rds code/02_slopeComparisonAsiaVsAmericas.R
-	cd prose;        \
-  Rscript -e "knitr::stitch_rhtml('../code/02_slopeComparisonAsiaVsAmericas.R', output = '02_slopeComparisonAsiaVsAmericas.html')"
+	cd prose;                                         \
+  Rscript -e "knitr::stitch('../code/02_slopeComparisonAsiaVsAmericas.R', template = system.file('misc', 'knitr-template.Rmd', package = 'knitr'))";         \
+  rm 02_slopeComparisonAsiaVsAmericas.md;           \
+  rm -rf figure/
 
 figs/slopes_AsiaVsAmericas.pdf results/slopes_AsiaVsAmericas.txt: results/gCoef.rds code/03_slopeComparisonAsiaVsAmericas.R
 	Rscript code/03_slopeComparisonAsiaVsAmericas.R
