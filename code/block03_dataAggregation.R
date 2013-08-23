@@ -50,6 +50,7 @@ apply(tinyDat, 2, median)
 ## rownames
 rowMeans(tinyDat) # FAST use for big datasets
 which.min(tinyDat[1, ])
+apply(tinyDat, 1, which.min)
 jCountries[apply(tinyDat, 1, which.min)]
 apply(tinyDat, 2, summary)
 
@@ -129,7 +130,8 @@ leByCont2
 
 ## walk before you run ....
 lm(lifeExp ~ year, gDat, subset = country == "Zimbabwe")
-xyplot(lifeExp ~ year, gDat, subset = country == "Zimbabwe")
+xyplot(lifeExp ~ year, gDat, subset = country == "Zimbabwe",
+       type = c("p", "r"))
 
 yearMin <- min(gDat$year)
 lm(lifeExp ~ I(year - yearMin), gDat,
@@ -170,3 +172,35 @@ tail(gCoef)
 gCoef$continent <- gDat$continent[match(gCoef$country, gDat$country)]
 str(gCoef)
 tail(gCoef)
+
+## some exploration of slopes from nescent content
+xyplot(slope ~ intercept, gCoef)
+xyplot(slope ~ intercept, gCoef, group = continent, auto.key = TRUE)
+xyplot(slope ~ intercept, gCoef, group = continent, auto.key = TRUE,
+       type = c("p", "r"))
+xyplot(slope ~ intercept | continent, gCoef, grid = TRUE,
+       subset = !(continent %in% "Oceania"))
+leSlopeByCont <- ddply(gCoef, .(continent), summarise, minSlope = min(slope),
+                       medSlope = median(slope), maxSlope = max(slope))
+leSlopeByCont
+
+## some data reshaping of slopes from nescent content
+## data reshaping
+## from short and fat to skinny and tall
+# leSlopeByContTall <- with(leSlopeByCont,
+# data.frame(continent = continent,
+# slope = c(minSlope, medSlope, maxSlope),
+# what = factor(rep(c("min", "med", "max")), each = nrow(leSlopeByCont), levels = c("min", "med", "max"))))
+# leSlopeByContTall <- with(leSlopeByCont,
+# + data.frame(continent = continent,
+# + slope = c(minSlope, medSlope, maxSlope),
+# + what = factor(rep(c("min", "med", "max")), each = nrow(leSlopeByCont), levels = c("min", "med", "max")))
+# leSlopeByContTall <- with(leSlopeByCont, data.frame(continent = continent, slope = c(minSlope,
+# medSlope, maxSlope), what = factor(rep(c("min", "med", "max"), each = nrow(leSlopeByCont)),
+# levels = c("min", "med", "max"))))
+# str(leSlopeByContTall)
+# leSlopeByContTall
+# stripplot(slope ~ what, leSlopeByContTall)
+# stripplot(slope ~ what, leSlopeByContTall, groups = continent, auto.key = TRUE, grid = TRUE, tybe = "b")
+## built-in stack and reshape ... more trouble than worth?
+## add-on package reshape ... as good as plyr?
