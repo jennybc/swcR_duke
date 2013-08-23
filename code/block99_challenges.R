@@ -64,16 +64,92 @@
 ## Get the residuals
 ## Use the residuals to declare the model fit good or bad
 ## E.g. is there >= 1 |residual| > some threshhold?
-## Store scatterplots of lifeExpectancy vs year for the 
+## Store scatterplots of lifeExpectancy vs year for the
 ## countries for which linear model is poor fit
 
 ## Hints:
 ## resid() takes a fitted model and returns residuals
 ## xyplot(y ~ x, yourDat, type = c("p","r")) will include a linear fit
 
-## Variant: Find the countries of interest by fitting linear model via OLS and 
+## Variant: Find the countries of interest by fitting linear model via OLS and
 ## via robust methods and look for countries where the intercept and/or slope is
 ## very different
 
 ## the robustbase package is great and offers a robust version of lm() in the
 ## function lmrob()
+
+
+## code rescued from nescent content before deleting ... looks like me
+## noodling around with challenge exercises? read closely later
+
+file.path(getwd(), "results")
+dir.create(file.path(getwd(), "results"))
+list.files()
+list.files(file.path(getwd(), "results"))
+
+write.table(subset(gDat, country == "Canada"), file.path(getwd(), "results", "canada.txt"))
+write.table(subset(gDat, country == "Canada"), file.path(getwd(), "results", "canada.txt"),
+            quote = FALSE, row.names = FALSE, sep = "\t")
+jCountry <- "Mexico"
+paste0(jCountry, ".txt")
+write.table(subset(gDat, country == jCountry), file.path(getwd(), "results", paste0(jCountry, ".txt")),
+            quote = FALSE, row.names = FALSE, sep = "\t")
+
+i <- 1
+(jCountry <- levels(gDat$country)[i])
+write.table(subset(gDat, country == jCountry), file.path(getwd(), "results", paste0(jCountry, ".txt")),
+           quote = FALSE, row.names = FALSE, sep = "\t")
+
+for(i in seq_along(levels(gDat$country))) {
+  jCountry <- levels(gDat$country)[i]
+  write.table(subset(gDat, country == jCountry), file.path(getwd(),
+                                                           "results", paste0(jCountry, ".txt")),
+              quote = FALSE, row.names = FALSE, sep = "\t")
+}
+
+file.remove(Sys.glob(file.path(getwd(), "results", "*")))
+
+sapply(seq_along(levels(gDat$country)), function(i) {
+  jCountry <- levels(gDat$country)[i]
+  write.table(subset(gDat, country == jCountry), file.path(getwd(),
+                                                           "results", paste0(jCountry, ".txt")),
+              quote = FALSE, row.names = FALSE, sep = "\t")
+
+})
+
+file.remove(Sys.glob(file.path(getwd(), "results", "*")))
+
+sapply(levels(gDat$country), function(jCountry) {
+  write.table(subset(gDat, country == jCountry),
+              file.path(getwd(), "results", paste0(jCountry, ".txt")),
+              quote = FALSE, row.names = FALSE, sep = "\t")
+})
+
+## CHALLENGE
+
+## in a totally new script
+## read the country-specific data we just wrote
+## write a scatterplot of lifeExpectancy vs year to figs/<country name>.pdf
+
+## in a totally new script
+## read in the country-level slopes and intercepts
+## find some interesting countries within each continent, e.g. best/worst
+## make scatterplot that includes just those countries (on same w/ legend? or conditioned/facetted) and write one figure file per continent to figs/<continent name>_<something descriptive>.pdf
+
+xyplot(lifeExp ~ year, gDat, subset = country == "Germany", type = c("p", "r"),
+       main = "dev.print()")
+dev.print(pdf, "figs/germany.pdf", width = 3, height = 3)
+dir.create("figs")
+dev.print(pdf, "figs/germany.pdf")
+
+pdf("figs/germany2.pdf", width = 3, height = 3)
+xyplot(lifeExp ~ year, gDat, subset = country == "Germany", type = c("p", "r"),
+       main = "pdf() ... dev.off()")
+dev.off()
+
+hDat <- droplevels(subset(gCoef, continent %in% c("Asia", "Americas")))
+str(hDat)
+dotplot(slope ~ continent, hDat)
+
+t.test(slope ~ continent, hDat)
+
