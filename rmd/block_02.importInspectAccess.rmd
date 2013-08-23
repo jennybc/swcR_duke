@@ -1,0 +1,356 @@
+% Block 02: Basic care and feeding of data (data.frames, actually)
+% Jenny Bryan
+% 2013 August
+
+> "Rigor and clarity are not synonymous" -- Larry Wasserman
+
+> "Never hesitate to sacrifice truth for clarity." -- Greg Wilson's
+  dad
+
+### Creating a data.frame via import
+
+In real life you will usually bring data into R from an outside file. This is a huge and potentially fraught exercise, as most "wild caught" datasets have little gremlins lurking in them that complicate import and require cleaning. Due to time constraints, we will work with a "tame" dataset Jenny uses a lot in teaching, an extract from the Gapminder data Hans Rosling has popularized.
+
+Remember the data file you were asked to save on your computer in advance? It is named `gapminderDataFiveYear.txt`. Save a copy or move the file to the directory associated with the RStudio project you are using for this workshop. Bring the data into R like so:
+```{r, eval=FALSE}
+gDat <- read.delim("gapminderDataFiveYear.txt")
+## I can't simply read from working directory, as typed above, because this
+## webpage is not being generated in the directory / RStudio project where I'm
+## working living during SWC
+gDat <- read.delim("../../data/gapminder/gapminderDataFiveYear.txt")
+
+```
+One can also read data directly from a URL, FYI.
+```{r}
+## data import from URL
+gdURL <- "http://www.stat.ubc.ca/~jenny/notOcto/STAT545A/examples/gapminder/data/gapminderDataFiveYear.txt"
+gDat <- read.delim(file = gdURL)
+```
+The R function `read.table()` is the main workhorse for importing rectangular spreadsheet-y data into an R data.frame. Use it and grow to love it. Read the documentation. There, for example, you will learn about handy wrappers around `read.table()`, such as `read.delim()` where many arguments have been preset to anticipate some common file formats. Whenever you have rectangular, spreadsheet-y data, your default data receptacle in R is a `data.frame`. Do not depart from this without good reason.
+
+data.frames are awesome because they keep the variables packaged nicely together, keep them in sync vis-a-vis row order, and most functions for inference, modelling, and graphing are happy to be passed a data.frame as the place to find the variables you're working on. data.frame -- unlike general arrays or, specifically, matrices in R -- can hold variables of different flavors. So they're great for typical datasets that contain, e.g. subject IDs or names, quantitative measurements, and information on treated vs. untreated.
+
+Get an overview of the object we just created
+```{r}
+str(gDat)
+```
+We could print the whole thing to screen (not so useful with datasets of any size) but it's nicer to look at the first bit or the last bit or a random snippet (I've written a function to look at some random rows).
+```{r}
+head(gDat)
+tail(gDat)
+peek(gDat) # you won't have this function!
+```
+Other basic info can be obtained
+```{r}
+names(gDat)# variable or column names
+head(rownames(gDat)) # boring, in this case
+dim(gDat)
+nrow(gDat)
+ncol(gDat)
+#dimnames(gDat) # ill-advised ... too many rows
+```
+A statistical overview can be obtained with `summary()`
+```{r}
+summary(gDat)
+```
+To get a sense of the data we have, for many countries, here are some exploratory plots of data subsets
+```{r}
+library(lattice)
+xyplot(lifeExp ~ year, gDat, subset = country == "Colombia")
+xyplot(lifeExp ~ gdpPercap, gDat, subset = year == 2007)
+xyplot(lifeExp ~ gdpPercap, gDat, subset = year == 2007, group = continent)
+xyplot(lifeExp ~ gdpPercap, gDat, subset = year == 2007, group = continent, auto.key = TRUE)
+```
+Let's go back to the result of `str()` to talk about `data.frames` and vectors in R
+```{r}
+str(gDat)
+```
+A `data.frame` is a special case of a `list`, which is used in R to hold just about anything. `data.frames` are the special case where the length of each list component is the same. `data.frames` are superior to matrices in R because they can hold vectors of different "flavor" (heuristic term explained below), e.g. numeric, character, and categorical data can be stored together. This comes up alot.
+
+Numeric vector example: `lifeExp`
+```{r}
+summary(gDat$lifeExp)
+densityplot(~ lifeExp, gDat)
+```
+Numeric integer vector example: `year`
+```{r}
+summary(gDat$year)
+table(gDat$year)
+```
+factors: `country` and `continent`
+```{r}
+summary(gDat$continent)
+levels(gDat$continent)
+nlevels(gDat$continent)
+table(gDat$continent)
+barchart(table(gDat$continent))
+dotplot(table(gDat$continent), type = "h", col.line = NA)
+```
+The __levels__ of the factor `continent` are *blah, blah* and this is what you see when you print the object. In general, these are friendly human-readable character strings, like "male/female" and "control/treated". But know that, under the hood, R is really storing integer codes 1, 2, 3, etc. This schizophrenic nature of factors means they are rich with booby traps for the unsuspecting but they are a necessary evil. I recommend you simply learn how to properly care and feed for them. The pros, such as help with model building and figure making, far outweigh the cons. Specifically in modelling and figure-making, factors are anticipated and accomodated by the functions and packages you will want to exploit.
+```{r}
+xyplot(lifeExp ~ gdpPercap, gDat, subset = year == 2007, group = continent, auto.key = TRUE)
+```
+
+### `subset()` is the nicest way to isolate bits of data.frames (and other things)
+
+```{r}
+subset(gDat, subset = country == "Uruguay")
+subset(gDat, subset = country %in% c("United States", "Canada"))
+subset(gDat, subset = country == "Mexico",
+       select = c(country, year, lifeExp))
+```
+Look at the documentation. Discuss the `subset` and `select` arguments.
+
+Let's get the data for just 2007.
+How many rows?
+How many observations per continent?
+Scatterplot life expectancy against GDP per capita.
+Variants of that: indicate continent by color, do for just one continent, do for multiple continents at once but in separate plots
+```{r}
+hDat <- subset(gDat, subset = year == 2007)
+str(hDat)
+table(hDat$continent)
+xyplot(lifeExp ~ gdpPercap, hDat)
+xyplot(lifeExp ~ gdpPercap, hDat, group = continent, auto.key = TRUE)
+xyplot(lifeExp ~ gdpPercap | continent, hDat)
+```
+Be aware of and exploit the `subset` argument of most functions that accept `data = yourDataFrame`. We've already used it with the graphing commands above. Here's an example when fitting a linear model:
+```{r}
+myFit <- lm(lifeExp ~ year, gDat, subset = country == "Colombia")
+summary(myFit)
+(minYear <- min(gDat$year))
+myFit <- lm(lifeExp ~ I(year - minYear), gDat, subset = country == "Colombia")
+summary(myFit)
+xyplot(lifeExp ~ year, gDat, subset = country == "Colombia", type = c("p", "r"))
+```
+### Review of `data.frame`
+
+Use `data.frames`
+
+Work within your `data.frames` by passing them to the `data` argument of functions that offer that. Do computations or make figures *in situ* -- don't create little copies and excerpts of your data. This will leave a cleaner "workspace" and cleaner code.
+
+This workstyle leaves behind code that is also fairly self-documenting.
+```{r, eval=FALSE}
+lm(lifeExp ~ year, gDat, subset = country == "Colombia")
+xyplot(lifeExp ~ year, gDat, subset = country == "Colombia")
+```
+You don't need to be an R expert to make a great guess at what the above code does.
+
+Referring to the variables by name (versus "X1" or by column number), also generates self-documenting code, decent labels on figures, etc.
+
+If a function doesn't have a `data` argument where you can provide a data.frame, you can fake it with `with()`.
+
+`with()` helps you avoid the creation of temporary, confusing little partial copies of your data. Use it -- possibly in combination with `subset()` -- to do specific computations without creating all the intermediate temporary objects you have no lasting interest in.
+
+`with()` is also useful if you are tempted to use `attach()` in order to save some typing.
+
+How would you compute the correlation of life expectancy and GDP per capita for the country of Colombia?
+```{r}
+with(subset(gDat, subset = country == "Colombia"),
+     cor(lifeExp, gdpPercap))
+```
+
+### Vectors are everywhere
+
+Your garden variety R object is a vector. A single piece of info that you might regard as a scalar is just a vector of length 1 and R will cheerfully let you add stuff to it. Square brackets are used for isolating bits of a vector (or more complicated objects) for inspection, modification, etc.
+
+```{r}
+x <- 3 * 4
+x
+is.vector(x)
+length(x)
+x[2] <- 100
+x
+x[5] <- 3
+x
+```
+
+R is built to work with vectors. Many operations are *vectorized*, i.e. by default they will happen component-wise when given a vector as input. Notice that R also recycles vectors, if they are not the necessary lenght. Can be a beautiful thing, when you expect but can also cause problems.
+```{r}
+(y <- 1:3)
+(z <- 3:7)
+z^2
+y + z
+```
+
+Plain vanilla R objects are called "atomic vectors" and an absolute requirement is that all the bits of info they hold are of the same sort, i.e. all numeric or logical or character. If that's not already true upon creation, the elements will be coerced to the same "flavor", using a "lowest common denominator" approach (usually character). The catenate function `c()` is often used for making vectors (or lists, more later).
+```{r}
+(x <- c("cabbage", pi, TRUE, 4.3))
+length(x)
+mode(x)
+class(x)
+```
+
+Let's create some simple vectors.
+```{r}
+n <- 8
+set.seed(1)
+(w <- round(rnorm(n), 2))# numeric floating
+(x <- 1:n)#numeric integer
+## another way to accomplish by hand is x <- c(1, 2, 3, 4, 5, 6, 7, 8)
+(y <- LETTERS[1:n])#character
+(z <- runif(n) > 0.3)#logical
+(v <- factor(rep(LETTERS[9:12], each = 2)))
+```
+Use `str()` and any other functions you wish to inspect these objects.
+```{r}
+str(w)
+str(x)
+str(y)
+str(z)
+str(v)
+```
+### Indexing a vector
+
+Most common, useful ways to index a vector
+  * logical vector: keep the TRUEs, ditch the FALSEs
+  * vector of positive integers specifying the keepers
+  * vector of negative integers specifying the losers
+  * vector a character strings, naming the keepers
+
+```{r}
+w
+names(w) <- letters[seq_along(w)]
+w
+w < 0
+which(w < 0)
+w[w < 0]
+seq(from = 1, to = length(w), by = 2)
+w[seq(from = 1, to = length(w), by = 2)]
+w[-c(2, 5)]
+w[c('c', 'a', 'f')]
+```
+### lists hold just about anything
+
+```{r}
+(a <- list("cabbage", pi, TRUE, 4.3))
+length(a)
+mode(a)
+class(a)
+a[[2]]
+```
+
+Contrast the above with what happens when we use `c()` instead of `list()` when assigning `a`.
+
+### Creating a data.frame within R
+
+Recall the length 8 vectors we created above. Let's make a `data.frame` -- call it `jDat` -- that holds those variables.
+```{r}
+n <- 8
+set.seed(1)
+(jDat <- data.frame(w = round(rnorm(n), 2),
+                    x = 1:n,
+                    y = I(LETTERS[1:n]),
+                    z = runif(n) > 0.3,
+                    v = rep(LETTERS[9:12], each = 2)))
+str(jDat)
+all.equal(w, jDat$w)
+all.equal(x, jDat$x)
+```
+Compare the variables in your data.frame to their stand-alone counterparts. Are they the same? If not, why not? And how can you fix it? I expect people to forget about setting the random seed and to experience automatic character-to-factor conversion.
+
+Note that I surround the name of the character vector `y` with `I()` to prevent it being converted to factor. I no longer explicitly define `v` as a factor because that happens by default.
+
+You can access one variable like so:
+```{r}
+jDat$z
+str(jDat$z)
+```
+Or use matrix-style indexing
+```{r}
+jDat[ ,"v"]
+str(jDat[ ,"v"])
+```
+Or use vector-style indexing to get a data.frame back
+```{r}
+jDat["y"]
+str(jDat["y"])
+jDat[c("w", "v")]
+str(jDat[c("w", "v")])
+str(subset(jDat, select = c(w, v)))
+```
+Or use list-style indexing to get individual variables
+```{r}
+jDat[["y"]]
+str(jDat[["y"]])
+```
+
+### Who knows if we will get this far ... if we do, we probably stop here
+
+### Basic "flavors" of atomic R objects
+
+Every R object has a type, a mode, and a class (among other things!) and it can be bewildering to navigate these different facets of an R object. For now, assume we are talking about _atomic vectors_, such as vectors of numbers, character strings, or logical values. Even a single number is stored as a vector of length 1, so atomic vectors are really the most basic sort of R object we need to understand. This table presents a technically correct typology of the most common atomic vectors, along with a simplified-yet-useful adjunct which we'll call "flavor".
+
++-----------+---------------+-----------+-----------+
+| "flavor"  | type reported | mode()    | class()   |
+|           | by typeof()   |           |           |
++===========+===============+===========+===========+
+| character | character     | character | character |
++-----------+---------------+-----------+-----------+
+| logical   | logical       | logical   | logical   |
++-----------+---------------+-----------+-----------+
+| numeric   | integer       | numeric   | integer   |
+|           | or double     |           | or double |
++-----------+---------------+-----------+-----------+
+| factor    | integer       | numeric   | factor    |
++-----------+---------------+-----------+-----------+
+
+Thinking about objects according to their "flavor" above will work fairly well for most purposes most of the time, at least when you're first getting started. Notice that most rows in the table are quite homogeneous, i.e. a logical vector is a logical vector is a logical vector. But the row pertaining to factors is an exception, which highlights the special nature of factors. (for more, go here (_future
+link_)).
+
+For run of the mill data analysis, one shouldn't have to worry about an object's type and we shall not speak of it again.
+
+See the module [Getting to know R objects](modules/getting_to_know_objects.html) for more.
+<!-- cm04 -->
+
+### Arrays, e.g. matrices
+
+Though I use data.frames as a rule (see above), there are times when one will store rectangular data as a matrix instead. This is a generalization of atomic vectors and the requirement that all the elements be of the same "flavor" holds. General arrays are possible in R, where matrix is an important special case having dimension 2.
+
+Let's make a simple matrix and give it decent row and column names, which turns out to be a great long-term practice.
+
+```{r}
+as.character(1:4)
+jMat <- outer(as.character(1:4), as.character(1:4),
+              function(x, y) {
+                paste0('x', x, y)
+                })
+jMat
+str(jMat)
+class(jMat)
+mode(jMat)
+dim(jMat)
+rownames(jMat)
+rownames(jMat) <- paste0("row", seq_len(nrow(jMat)))
+colnames(jMat) <- paste0("col", seq_len(ncol(jMat)))
+dimnames(jMat)#also useful for assignment
+jMat
+jMat[2, 3]
+jMat[7]
+jMat[2, ]
+jMat[ , 3]
+jMat[c("row1", "row4"), c("col2", "col3")]
+jMat[-c(2, 3), c(TRUE, TRUE, FALSE, FALSE)]
+jMat[1, grepl("[24]", colnames(jMat))]
+jMat["row1", 2:3] <- c("HEY!", "THIS IS NUTS!")
+jMat
+```
+
+
+### Jenny's crude little function `peek()`
+```{r}
+peek <- function(x, n = 7) {
+  if(is.matrix(x) | is.data.frame(x)) {
+    nX <- nrow(x)
+    print(x[sort(sample(nX, size = n)),])
+  } else {
+    cat("'peek' only anticipates matrices and data.frames.\n")
+  }
+}
+peek(gDat)
+```
+
+Notice that `str()` does something sensible for atomic vectors and, when enacted on a data.frame, gives an over view of the data.frame itself and then recursively delves into the constituent variables. Example of a generic that dispatches different method based on class of the input.
+
+Links I could use here one day as text evolves
+
