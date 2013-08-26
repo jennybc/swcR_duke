@@ -114,6 +114,8 @@ rbind(leByCont[[1]], leByCont[[2]], leByCont[[3]],
 library(plyr)
 
 ddply(gDat, .(continent), summarise, median = median(lifeExp))
+## maybe we should use different syntax?
+ddply(gDat, ~ continent, summarise, median = median(lifeExp))
 
 ## see how different the output of ddply and tapply are!
 str(ddply(gDat, .(continent), summarise, median = median(lifeExp)))
