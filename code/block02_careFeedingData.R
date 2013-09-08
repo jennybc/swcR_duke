@@ -18,7 +18,7 @@ gDat <- read.delim("data/gapminderDataFiveYear.txt")
 ## read.delim is merely a wrapper around that with
 ## certain arguments set to specific values
 gDat <- read.delim("data/gapminderDataFiveYear.txt",
-                   header = TRUE, sep = "\t")
+                   header = TRUE, sep = "\t", quote = "\"")
 str(gDat)
 head(gDat, n = 10)
 tail(gDat)
